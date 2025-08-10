@@ -1,11 +1,13 @@
 package com.vitran.backend.service;
 
+import com.vitran.backend.dto.GenericMapper;
 import com.vitran.backend.dto.PartyDto;
 import com.vitran.backend.model.Enumeration;
 import com.vitran.backend.model.Party;
 import com.vitran.backend.repo.EnumerationRepo;
 import com.vitran.backend.repo.PartyRepo;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Part;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,8 +34,10 @@ public class PartyService {
         return ResponseEntity.ok(partyRepo.save(party));
     }
 
-    public Party patch(PartyDto party) {
-        return null;
+    public ResponseEntity<?> patch(Long partyId, PartyDto partyDto) {
+        Party party = partyRepo.findById(partyId).orElseThrow(() -> new RuntimeException("Not found"));
+        GenericMapper.patchEntity(partyDto, party);
+        return ResponseEntity.ok(partyRepo.save(party));
     }
 
     public Boolean delete(Party party) {

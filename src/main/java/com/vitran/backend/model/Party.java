@@ -39,7 +39,7 @@ public class Party {
 
     @OneToMany(mappedBy = "party", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<UserLogin> items = new ArrayList<>();
+    private List<UserLogin> userLogins = new ArrayList<>();
 
     @CreatedDate
     @Column(updatable = false)
