@@ -21,7 +21,6 @@ import java.util.Set;
 @EntityListeners(AuditingEntityListener.class)
 public class UserLogin {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String userLoginId;
 
     @Column(nullable = false)
@@ -29,11 +28,11 @@ public class UserLogin {
     private String passwordHint;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "party_id")
+    @JoinColumn(name = "partyId")
     @JsonBackReference
     private Party party;
 
-    @OneToMany(mappedBy = "user_login", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "userLogin", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<UserLoginPermissionAppl> userLoginPermissionAppls;
 

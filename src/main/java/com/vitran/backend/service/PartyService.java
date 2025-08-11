@@ -6,16 +6,11 @@ import com.vitran.backend.model.Enumeration;
 import com.vitran.backend.model.Party;
 import com.vitran.backend.repo.EnumerationRepo;
 import com.vitran.backend.repo.PartyRepo;
-import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.Part;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Service
 public class PartyService {
@@ -28,19 +23,35 @@ public class PartyService {
         return ResponseEntity.ok(partyRepo.findById(partyId).toString());
     }
 
-    public ResponseEntity<Party> create(Party party) {
-        Enumeration partyStatus = enumerationRepo.findByEnumTypeIdAndenumId("PARTY_STATUS", "ACTIVE");
+    public ResponseEntity<?> findAllParty() {
+        return ResponseEntity.ok(partyRepo.findAll());
+    }
+
+    public ResponseEntity<?> create(Party party) {
+        Enumeration partyStatus = enumerationRepo.findByEnumTypeIdAndEnumId("PARTY_STATUS", "ACTIVE");
         party.setStatus(partyStatus);
-        return ResponseEntity.ok(partyRepo.save(party));
+        return ResponseEntity.ok(partyRepo.save(party).getPartyId());
     }
 
     public ResponseEntity<?> patch(Long partyId, PartyDto partyDto) {
-        Party party = partyRepo.findById(partyId).orElseThrow(() -> new RuntimeException("Not found"));
+        Party party = partyRepo.findById(partyId).orElseThrow(() -> new RuntimeException("Party not found"));
         GenericMapper.patchEntity(partyDto, party);
-        return ResponseEntity.ok(partyRepo.save(party));
+        return ResponseEntity.ok(partyRepo.save(party).getPartyId());
     }
 
-    public Boolean delete(Party party) {
-        return null;
+    public ResponseEntity<?> delete(Long partyId) {
+
+        if (partyRepo.existsById(partyId)) {
+            PartyDto partyDto = new PartyDto();
+            partyDto.setPartyId(partyId);
+            Enumeration partyStatus = enumerationRepo.findByEnumTypeIdAndEnumId("PARTY_STATUS", "INACTIVE");
+            partyDto.setStatus(partyStatus);
+            partyDto.setThruDate(LocalDateTime.now());
+
+            ResponseEntity<?> deletedPartyId = this.patch(partyId, partyDto);
+            return ResponseEntity.ok(deletedPartyId);
+        }
+
+        return ResponseEntity.badRequest().build();
     }
 }

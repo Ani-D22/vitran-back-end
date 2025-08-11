@@ -18,14 +18,15 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class UserLoginPermissionAppl {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long loginPermissionApplId; // surrogate
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_login_id")
+    @JoinColumn(name = "userLoginId")
     private UserLogin userLogin;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "enum_id")
+    @JoinColumn(name = "enumId")
     private Enumeration loginPermission;
 
     @CreatedDate

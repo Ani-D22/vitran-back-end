@@ -25,11 +25,11 @@ public class Party {
     private Long partyId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "enum_id")
+    @JoinColumn(name = "enumId")
     private Enumeration partyType;
 
     @ManyToOne
-    @JoinColumn(name = "status_id", referencedColumnName = "enum_id")
+    @JoinColumn(name = "statusId", referencedColumnName = "enumId")
     private Enumeration status;
 
     @Column(nullable = false)
