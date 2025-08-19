@@ -1,9 +1,7 @@
-package com.vitran.backend.cotroller;
+package com.vitran.backend.controller;
 
 import com.vitran.backend.dto.PartyDto;
-import com.vitran.backend.model.Party;
 import com.vitran.backend.service.PartyService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,11 +9,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/party")
 public class PartyController {
 
-    @Autowired
-    private PartyService partyService;
+    private final PartyService partyService;
+
+    public PartyController(PartyService partyService) {
+        this.partyService = partyService;
+    }
 
     @GetMapping("/{partyId}")
-    public ResponseEntity<?> findById(@PathVariable Long partyId){
+    public ResponseEntity<?> findById(@PathVariable Long partyId) {
         return partyService.findById(partyId);
     }
 
@@ -25,8 +26,8 @@ public class PartyController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createParty(@RequestBody Party party) {
-        return partyService.create(party);
+    public ResponseEntity<?> createParty(@RequestBody PartyDto partyDto) {
+        return partyService.create(partyDto);
     }
 
     @PutMapping("/{partyId}")
@@ -36,6 +37,6 @@ public class PartyController {
 
     @DeleteMapping("/{partyId}")
     public ResponseEntity<?> deleteParty(@PathVariable Long partyId) {
-        return ResponseEntity.ok(partyService.delete(partyId));
+        return partyService.delete(partyId);
     }
 }

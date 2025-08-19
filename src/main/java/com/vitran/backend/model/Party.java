@@ -1,50 +1,71 @@
 package com.vitran.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vitran.backend.model.enums.PartyStatus;
+import com.vitran.backend.model.enums.PartyType;
+import com.vitran.backend.model.enums.PartyRoleType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
+@Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "party")
 @EntityListeners(AuditingEntityListener.class)
 public class Party {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long partyId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "enumId")
-    private Enumeration partyType;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private PartyType partyType;
 
-    @ManyToOne
-    @JoinColumn(name = "statusId", referencedColumnName = "enumId")
-    private Enumeration status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private PartyStatus status;
 
-    @Column(nullable = false)
+    private String firstName;
+    private String lastName;
+    private String gender;
+
+    private String orgName;
+
+    @NonNull
     private LocalDateTime fromDate;
 
     private LocalDateTime thruDate;
 
-    @OneToMany(mappedBy = "party", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<UserLogin> userLogins = new ArrayList<>();
+    /** Store multiple roles in a join table */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(
+            name = "party_roles",
+            joinColumns = @JoinColumn(name = "party_id")
+    )
+    @Column(name = "role", nullable = false, length = 20)
+    private Set<PartyRoleType> roles = new HashSet<>();
 
+    @JsonIgnore
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdDate;
 
+    @JsonIgnore
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedDate;

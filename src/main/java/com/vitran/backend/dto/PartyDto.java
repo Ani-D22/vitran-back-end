@@ -1,20 +1,21 @@
 package com.vitran.backend.dto;
 
-import com.vitran.backend.model.Enumeration;
-import com.vitran.backend.model.Party;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
+import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class PartyDto extends GenericDTO<Party> {
-    private Long partyId;
-    private Enumeration status;
-    private LocalDateTime thruDate;
-}
+/**
+ * Single DTO for create and update operations.
+ * Any field can be null → we decide in the service layer what to set or ignore.
+ */
+public record PartyDto(
+        Long partyId,
+        String partyType,          // PERSON / ORGANIZATION
+        String partyStatus,        // ACTIVE / INACTIVE / SUSPENDED
+        Set<String> roles,         // ADMIN / WORKER / BUSINESS / CUSTOMER / DEVELOPER
+        String firstName,
+        String lastName,
+        String gender,
+        String orgName,
+        LocalDateTime fromDate,
+        LocalDateTime thruDate
+) {}
